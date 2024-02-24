@@ -80,30 +80,25 @@ export const findByEmail = async (user_email: string): Promise<UnitUser[] | null
     return getUsers;
 }
 
-export const findByUserName = async (username: string): Promise<null | UnitUser> => {
+export const findByUserName = async (username: string): Promise<UnitUser[] | null> => {
 
     const allUsers = await findAll();
-
-    const getUser = allUsers.find(result => result.username.includes(username));
-
-    if(!getUser){
+    const getUsers = allUsers.filter(user => user.username.includes(username));
+    if (getUsers.length === 0) {
         return null;
     }
-
-    return getUser;
+    return getUsers;
 }
 
-export const findByEmailAndUsername = async (user_email: string, username: string): Promise<null | UnitUser> => {
+export const findByEmailAndUsername = async (user_email: string, username: string): Promise<UnitUser[] | null> => {
 
     const allUsers = await findAll();
 
-    const getUser = allUsers.find(result => result.email.includes(user_email) && result.username.includes(username));
-
-    if(!getUser){
+    const getUsers = allUsers.filter(user => user.email.includes(user_email) && user.username.includes(username));
+    if (getUsers.length === 0) {
         return null;
     }
-
-    return getUser;
+    return getUsers;
 }
 
 export const compassPassword = async(email : string, supplied_password : string): Promise<null | UnitUser> => {
