@@ -44,7 +44,7 @@ userRouter.post("/register", async(req : Request, res : Response) => {
 
         const user = await database.findByEmail(email)
 
-        if(user){
+        if(!user){
             return res.status(StatusCodes.NOT_FOUND).json({error : `This email has already been taken`})
         }
 
@@ -125,3 +125,130 @@ userRouter.delete('/user/:id', async (req: Request, res: Response) => {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({error})
     }
 })
+
+// userRouter.get("/users/search", async (req : Request<{},{},{},{email?: string, name?: string}>, res : Response) => {
+//     try{
+        
+
+//         const { email, name} = req.query;
+
+//         if(email){
+//             const user = await database.findByEmail(email);
+    
+//             if(!user){
+//                 return res.status(StatusCodes.NOT_FOUND).json({msg : `No users at this time..`})
+//             }
+//         }
+
+//         if(name){
+//             const user = await database.findOne(name);
+    
+//             if(!user){
+//                 return res.status(StatusCodes.NOT_FOUND).json({msg : `No users at this time..`})
+//             }
+//         }
+
+//         const allUsers : UnitUser[] = await database.findAll()
+
+//         if(!allUsers){
+//             return res.status(StatusCodes.NOT_FOUND).json({msg : `No users at this time..`})
+//         }
+
+//         return res.status(StatusCodes.OK).json({total_user : allUsers.length, allUsers})
+//     }catch(error){
+//         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({error})
+//     }
+// })
+
+// userRouter.get("/users/search", async (req : Request, res : Response) => {
+//     try{
+        
+//         const allUsers : UnitUser[] = await database.findAll()
+
+//         if(!allUsers){
+//             return res.status(StatusCodes.NOT_FOUND).json({msg : `No users at this time..`})
+//         }
+
+//         return res.status(StatusCodes.OK).json({total_user : allUsers.length, allUsers})
+//     }catch(error){
+//         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({error})
+//     }
+// })
+
+// userRouter.get("/users/search", async (req : Request<{},{},{},{name?: string}>, res : Response) => {
+//     try{
+
+//         const { name } = req.query;
+
+//         if(!name){
+//             return res.status(StatusCodes.NOT_FOUND).json({msg : `Invalid Username`})
+//         }
+
+//         const user = await database.findOne(name);
+
+//         if(!user){
+//             return res.status(StatusCodes.NOT_FOUND).json({msg : `No users at this time..`})
+//         }
+
+
+//         return res.status(StatusCodes.OK).json({user})
+        
+//     }catch(error){
+//         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({error})
+//     }
+// })
+
+// userRouter.get("/users/search", async (req : Request<{},{},{},{email?: string}>, res : Response) => {
+//     try{
+
+//         const { email } = req.query;
+
+//         if(!email){
+//             return res.status(StatusCodes.NOT_FOUND).json({msg : `Invalid Email`})
+//         }
+
+//         const user = await database.findByEmail(email);
+
+//         if(!user){
+//             return res.status(StatusCodes.NOT_FOUND).json({msg : `No users at this time..`})
+//         }
+
+
+//         return res.status(StatusCodes.OK).json({user})
+        
+//     }catch(error){
+//         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({error})
+//     }
+// })
+
+userRouter.get("/users/search", async (req: Request<{},{},{},{name?: string, email?: string}>, res: Response) => {
+    try {
+        const { name, email } = req.query;
+
+        if(!name && !email){
+            const allUsers: UnitUser[] = await database.findAll();
+            if (!allUsers || allUsers.length === 0) {
+                return res.status(StatusCodes.NOT_FOUND).json({ msg: `No users at this time..` });
+            }
+            return res.status(StatusCodes.OK).json({ total_user: allUsers.length, allUsers });
+        }
+        console.log(name);
+        if (name) {
+            const user = await database.findByUserName(name);
+            if (!user) {
+                return res.status(StatusCodes.NOT_FOUND).json({ msg: `No users found with the specified name` });
+            }
+            return res.status(StatusCodes.OK).json({ user });
+        } else if (email) {
+            const user = await database.findByEmail(email);
+            if (!user) {
+                return res.status(StatusCodes.NOT_FOUND).json({ msg: `No users found with the specified email` });
+            }
+            return res.status(StatusCodes.OK).json({ user });
+        } 
+    } catch (error) {
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error });
+    }
+});
+
+
