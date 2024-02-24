@@ -44,7 +44,7 @@ userRouter.post("/register", async(req : Request, res : Response) => {
 
         const user = await database.findByEmail(email)
 
-        if(!user){
+        if(user){
             return res.status(StatusCodes.NOT_FOUND).json({error : `This email has already been taken`})
         }
 
@@ -232,17 +232,24 @@ userRouter.get("/users/search", async (req: Request<{},{},{},{name?: string, ema
             }
             return res.status(StatusCodes.OK).json({ total_user: allUsers.length, allUsers });
         }
-        console.log(name);
+        if(name && email){
+            const user = await database.findByEmailAndUsername(email, name);
+            if (!user) {
+                return res.status(StatusCodes.NOT_FOUND).json([]);
+            }
+            return res.status(StatusCodes.OK).json({user});
+        }
+
         if (name) {
             const user = await database.findByUserName(name);
             if (!user) {
-                return res.status(StatusCodes.NOT_FOUND).json({ msg: `No users found with the specified name` });
+                return res.status(StatusCodes.NOT_FOUND).json([]);
             }
             return res.status(StatusCodes.OK).json({ user });
         } else if (email) {
             const user = await database.findByEmail(email);
             if (!user) {
-                return res.status(StatusCodes.NOT_FOUND).json({ msg: `No users found with the specified email` });
+                return res.status(StatusCodes.NOT_FOUND).json([]);
             }
             return res.status(StatusCodes.OK).json({ user });
         } 

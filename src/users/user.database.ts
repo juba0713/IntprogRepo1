@@ -61,7 +61,7 @@ export const findByEmail = async (user_email: string): Promise<null | UnitUser> 
 
     const allUsers = await findAll();
 
-    const getUser = allUsers.find(result => user_email === result.email);
+    const getUser = allUsers.find(result => result.email.includes(user_email));
 
     if(!getUser){
         return null;
@@ -74,7 +74,20 @@ export const findByUserName = async (username: string): Promise<null | UnitUser>
 
     const allUsers = await findAll();
 
-    const getUser = allUsers.find(result => username === result.username);
+    const getUser = allUsers.find(result => result.username.includes(username));
+
+    if(!getUser){
+        return null;
+    }
+
+    return getUser;
+}
+
+export const findByEmailAndUsername = async (user_email: string, username: string): Promise<null | UnitUser> => {
+
+    const allUsers = await findAll();
+
+    const getUser = allUsers.find(result => result.email.includes(user_email) && result.username.includes(username));
 
     if(!getUser){
         return null;
@@ -125,7 +138,7 @@ export const update = async(id: string, updateValues: User): Promise<UnitUser | 
 export const remove = async(id: string): Promise<null | void> => {
 
     const user = await findOne(id)
-
+ 
     if(!user){
         return null
     }
