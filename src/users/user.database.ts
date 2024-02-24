@@ -57,7 +57,7 @@ export const create = async (userData: UnitUser): Promise<UnitUser | null> => {
     return user;
 }
 
-export const findByEmail = async (user_email: string): Promise<null | UnitUser> => {
+export const findByEmail2 = async (user_email: string): Promise<UnitUser | null> => {
 
     const allUsers = await findAll();
 
@@ -68,6 +68,16 @@ export const findByEmail = async (user_email: string): Promise<null | UnitUser> 
     }
 
     return getUser;
+}
+
+export const findByEmail = async (user_email: string): Promise<UnitUser[] | null> => {
+
+    const allUsers = await findAll();
+    const getUsers = allUsers.filter(user => user.email.includes(user_email));
+    if (getUsers.length === 0) {
+        return null;
+    }
+    return getUsers;
 }
 
 export const findByUserName = async (username: string): Promise<null | UnitUser> => {
@@ -98,7 +108,7 @@ export const findByEmailAndUsername = async (user_email: string, username: strin
 
 export const compassPassword = async(email : string, supplied_password : string): Promise<null | UnitUser> => {
 
-    const user = await findByEmail(email)
+    const user = await findByEmail2(email)
 
     const decryptPassword = await bcrypt.compare(supplied_password, user!.password)
 
